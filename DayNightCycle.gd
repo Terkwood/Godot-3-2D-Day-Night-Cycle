@@ -1,6 +1,7 @@
 extends CanvasModulate
 
-var day_duration = 0.5 # In minutes
+const day_duration_real_minutes = 0.5
+const day_duration_real_seconds = 60 * 60 * day_duration_real_minutes
 export (float) var day_start_hour = 10 # 24 hours time (0-23)
 var day_start_number = 1
 
@@ -8,6 +9,7 @@ var color_dawn = Color(0.86, 0.70, 0.70, 1.0)
 var color_day = Color(1.0, 1.0, 1.0, 1.0)
 var color_dusk = Color(0.59, 0.66, 0.78, 1.0)
 var color_night = Color(0.07, 0.09, 0.38, 1.0)
+
 
 var current_time
 var current_day_hour
@@ -22,13 +24,11 @@ enum { NIGHT, DAWN, DAY, DUSK }
 var debug_mode = false
 
 func _ready():
-	day_duration = 60 * 60 * day_duration # Convert 'day_duration' from minutes to seconds
-	
 	current_day_number = day_start_number
-	current_time = (day_duration / 24) * day_start_hour
-	current_day_hour = current_time / (day_duration / 24)
+	current_time = (day_duration_real_seconds / 24) * day_start_hour
+	current_day_hour = current_time / (day_duration_real_seconds / 24)
 	
-	transition_duration = (((day_duration / 24) * transition_duration_time) / 60)
+	transition_duration = (((day_duration_real_seconds / 24) * transition_duration_time) / 60)
 	
 	if current_day_hour >= 18 or current_day_hour <= 5:
 		cycle = NIGHT
@@ -50,9 +50,9 @@ func _physics_process(delta):
 
 
 func day_cycle():
-	current_day_hour = current_time / (day_duration / 24)
+	current_day_hour = current_time / (day_duration_real_seconds / 24)
 	
-	if current_time >= day_duration:
+	if current_time >= day_duration_real_seconds:
 		current_time = 0
 		current_day_hour = 0
 		current_day_number += 1
